@@ -4,7 +4,8 @@
 - The input and output directories must already exist.
 - If the input or output paths have any spaces in them, you must put the whole thing in quotes.  
 - I suggest putting the jar file in a separate/permanent directory (vs leaving it in your Downloads directory).
-- you must have java installed and working. Google how to do that if you aren't sure.
+- You must have java installed and working. Google how to do that if you aren't sure.
+- This code is self-contained - it doesn't cost anything, it doesn't contact any servers online, etc. I wrote this for myself to use and figured I'd share.
 
 ### HOWTO
 1. Download the latest jar file from https://github.com/brianpipa/epub-cover-extractor/releases and optionally put it in a more permanent location
