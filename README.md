@@ -1,5 +1,6 @@
 # epub-cover-extractor
-Extracts covers from epubs. The original idea for this was to extract the covers so that they could be used in an ereader's scrensaver. By converting to grayscale and resizing properly, the images would be ready to use.
+Extracts covers from epubs. The original idea for this was to extract the covers so that they could be used in an ereader's scrensaver. By converting to grayscale and resizing properly, the images would be ready to use.  
+Latest runnable version can be found at https://github.com/brianpipa/epub-cover-extractor/releases
 
 ## Building
 This project relies on https://github.com/psiegman/epublib and since that lib isn't currently in the main maven repo, you need to clone it and build (install) it separately. Once you have done that, just do the normal `mvn clean package` to build it.
