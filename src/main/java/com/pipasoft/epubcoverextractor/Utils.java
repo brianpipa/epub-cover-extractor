@@ -19,13 +19,26 @@ import nl.siegmann.epublib.epub.EpubReader;
 
 public class Utils {
 	
-	public static String extractCover(File file, String destinationDir) throws IOException {
+	/**
+	 * Extracts the cover from the epub and writes it to destinationDir as
+	 * epubname.extension, so if the epub is MyFavoriteBook.epub and the cover 
+	 * image is a png, it will write
+	 * MyFavoriteBook.png
+	 * 
+	 * if it can't get the cover, it returns null
+	 * 
+	 * @param epubFile
+	 * @param destinationDir
+	 * @return path to the cover or null
+	 * @throws IOException
+	 */
+	public static String extractCover(File epubFile, String destinationDir) throws IOException {
 		EpubReader reader = new EpubReader();
-		ZipFile zf = new ZipFile(file);
+		ZipFile zf = new ZipFile(epubFile);
 		Book book = reader.readEpub(zf);
 		Resource coverResource = book.getCoverImage();
 		if (coverResource == null) {
-			System.err.println("ERROR: Couldn't parse cover for "+file.getAbsolutePath());
+			System.err.println("ERROR: Couldn't parse cover for "+epubFile.getAbsolutePath());
 			return null;
 		}
 		String coverHref = coverResource.getHref();
@@ -48,14 +61,22 @@ public class Utils {
 		String coverImageFullHref = getCoverPath(opfHref, coverHref);
 		
 		String extractedCoverPath = destinationDir+"/"+epubname+"."+extension;
-		extractFile(file.toPath(), coverImageFullHref, Path.of(extractedCoverPath));
+		extractFile(epubFile.toPath(), coverImageFullHref, Path.of(extractedCoverPath));
 		
 		System.out.println("wrote cover: "+extractedCoverPath);		
 		return extractedCoverPath;		
 	}
 	
-	public static String extractCover(File file) throws IOException {
-		return extractCover(file, file.getParent());
+	/**
+	 * 
+	 * Extracts the cover from the epub and writes it to the same dir as the epub as
+	 * epubname.extension, so if the epub is MyFavoriteBook.epub and the cover 
+	 * image is a png, it will write MyFavoriteBook.png
+	 * 
+	 * if it can't get the cover, it returns null
+	 */
+	public static String extractCover(File epubFile) throws IOException {
+		return extractCover(epubFile, epubFile.getParent());
 	}
 
 	private static String getCoverPath(String opfHref, String coverHref) {		
@@ -67,6 +88,14 @@ public class Utils {
 		}
 	}
 	
+	/**
+	 * Extracts a file from a zip (epubs are zips) and writes it to outputFile
+	 * 
+	 * @param zipFile
+	 * @param fileName
+	 * @param outputFile
+	 * @throws IOException
+	 */
 	public static void extractFile(Path zipFile, String fileName, Path outputFile) throws IOException {
 		try (FileSystem fileSystem = FileSystems.newFileSystem(zipFile, null)) {
 			Path fileToExtract = fileSystem.getPath(fileName);
@@ -74,6 +103,12 @@ public class Utils {
 		}
 	}	
 	
+	/**
+	 * returns an array of File objects of the epubs in the path
+	 * 
+	 * @param path the path to examine
+	 * @return a File[]
+	 */
 	public static File[] listEpubs(String path) {
 		try {
             File f = new File(path);
@@ -95,6 +130,12 @@ public class Utils {
 		return null;
 	}
 		
+	/**
+	 * if the input String ends in File.separator, it removes it
+	 * 
+	 * @param input the String to examine
+	 * @return the String with the trailing File.separataor removed
+	 */
 	public static String removeTrailingSeparator(String input) {
 		String returnValue = input;
     	if (returnValue.endsWith(File.separator)) {
