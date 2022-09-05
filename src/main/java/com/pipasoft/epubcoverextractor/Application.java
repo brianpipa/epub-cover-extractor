@@ -1,5 +1,6 @@
 package com.pipasoft.epubcoverextractor;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -73,6 +74,10 @@ public class Application {
         output.setRequired(false);
         options.addOption(output);
 
+        Option dims = new Option("s", "size", true, "dimensions to resize in widthXheight format. Defaults to 600X800 if not specified");
+        dims.setRequired(false);
+        options.addOption(dims);        
+        
         Option unmodifiedImages = new Option("u", "unmodified", false, "Don't modify images");
         options.addOption(unmodifiedImages);
         
@@ -112,7 +117,17 @@ public class Application {
         }
         if (cmd.hasOption("nogray")) {
         	convertToGrayscale = false;
-        }        
+        }
+        if (cmd.hasOption("size")) {
+        	Point size = Utils.parseDimensions(cmd.getOptionValue("size"));
+        	if (size != null) {
+        		width = (int) size.getX();
+        		height = (int) size.getY();
+        	} else {
+        		System.err.println("Exiting with errors");
+        		System.exit(1);
+        	}
+        }                
         
 	}
 	

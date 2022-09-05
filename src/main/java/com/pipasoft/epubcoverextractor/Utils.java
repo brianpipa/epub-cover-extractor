@@ -1,6 +1,7 @@
 package com.pipasoft.epubcoverextractor;
 
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -165,7 +166,7 @@ public class Utils {
 	    }
 	    if (img != null) {	    	
 	    	if (resize) {
-	    		img = resizeImage(img, 600,  800);	    					
+	    		img = resizeImage(img, Application.width,  Application.height);	    					
 	    	}
 	    	if (convertToGrayscale) {
 	    		img = Grayscale.convert(img);
@@ -203,5 +204,34 @@ public class Utils {
 	    BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
 	    outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
 	    return outputImage;
+	}
+
+	/**
+	 * given a size like 600x800, splits it into the 2 pieces and returns a Point object
+	 * 
+	 * @param dimensions
+	 * @return
+	 */
+	public static Point parseDimensions(String dimensions) {
+		dimensions = dimensions.toLowerCase();
+		Point point = null;
+		boolean hasError = false;
+		String[] split = dimensions.split("x");
+		if (split.length == 2) {
+			try {
+				int width = Integer.parseInt(split[0]);
+				int height = Integer.parseInt(split[1]);
+				point = new Point(width, height);				
+			} catch (NumberFormatException nfe) {
+				hasError = true;
+			}
+		} else {
+			hasError = true;
+		}
+		if (hasError) {
+			System.err.println("ERROR: invalid dimensions: "+dimensions);
+			System.err.println("       format is widthXheight, e.g. 600x800");
+		}
+		return point;
 	}	
 }
