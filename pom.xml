@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pipasoft</groupId>
 	<artifactId>epub-cover-extractor</artifactId>
-	<version>1.1</version>
+	<version>1.2</version>
 	<build>
 		<plugins>
 			<plugin>
