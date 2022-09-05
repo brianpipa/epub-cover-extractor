@@ -1,5 +1,7 @@
 package com.pipasoft.epubcoverextractor;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -9,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -65,20 +69,15 @@ public class Utils {
 		
 		System.out.println("wrote cover: "+extractedCoverPath);		
 		return extractedCoverPath;		
-	}
-	
-	/**
-	 * 
-	 * Extracts the cover from the epub and writes it to the same dir as the epub as
-	 * epubname.extension, so if the epub is MyFavoriteBook.epub and the cover 
-	 * image is a png, it will write MyFavoriteBook.png
-	 * 
-	 * if it can't get the cover, it returns null
-	 */
-	public static String extractCover(File epubFile) throws IOException {
-		return extractCover(epubFile, epubFile.getParent());
-	}
+	}	
 
+	/**
+	 * gets full path to cover
+	 * 
+	 * @param opfHref the path to the opf
+	 * @param coverHrefthe path to the cover
+	 * @return teh full path
+	 */
 	private static String getCoverPath(String opfHref, String coverHref) {		
 		if (opfHref.contains("/")) {
 			String opfParent = new File(opfHref).getParent();			
@@ -96,7 +95,7 @@ public class Utils {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	public static void extractFile(Path zipFile, String fileName, Path outputFile) throws IOException {
+	private static void extractFile(Path zipFile, String fileName, Path outputFile) throws IOException {
 		try (FileSystem fileSystem = FileSystems.newFileSystem(zipFile, null)) {
 			Path fileToExtract = fileSystem.getPath(fileName);
 			Files.copy(fileToExtract, outputFile, StandardCopyOption.REPLACE_EXISTING);
@@ -143,4 +142,66 @@ public class Utils {
     	}    
     	return returnValue;
 	}
+
+	/**
+	 * manipulates the image (resize/gray)
+	 * 
+	 * @param cover the path to the image
+	 * @param resize true to resize it
+	 * @param convertToGrayscale true to convert to grayscale
+	 * @throws IOException
+	 */
+	public static void modifyImage(String cover, boolean resize, boolean convertToGrayscale) throws IOException {
+		//load image
+	    BufferedImage img = null;
+	    File coverFile = new File(cover);
+
+	    //read image
+	    try{      
+	      img = ImageIO.read(coverFile);
+	    }catch(IOException e){
+	      System.err.println(e);
+	      return;
+	    }
+	    if (img != null) {	    	
+	    	if (resize) {
+	    		img = resizeImage(img, 600,  800);	    					
+	    	}
+	    	if (convertToGrayscale) {
+	    		img = Grayscale.convert(img);
+	    	}
+	    }	     
+	    writeImage(img, coverFile);			    
+	}
+	
+	/**
+	 * writes a BufferdImage to disk
+	 * 
+	 * @param img BufferImage to write
+	 * @param ImagePath path to write image to
+	 */
+	private static void writeImage(BufferedImage img, File ImagePath) {
+	    try{
+	        String extension = FilenameUtils.getExtension(ImagePath.getName());
+	        ImageIO.write(img, extension, ImagePath);
+	      }catch(IOException e){
+	        System.out.println(e);
+	      }		
+	}
+	
+	/**
+	 * resizes a BufferedImage
+	 * 
+	 * @param originalImage the original bufferedImage
+	 * @param targetWidth the width to resize to
+	 * @param targetHeight the height to resize to
+	 * @return the resized BufferedImage
+	 * @throws IOException
+	 */
+	private static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException {
+	    Image resultingImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT);
+	    BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+	    outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
+	    return outputImage;
+	}	
 }

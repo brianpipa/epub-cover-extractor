@@ -20,6 +20,8 @@ public class Application {
 	static String outputDir;
 	static boolean convertToGrayscale = true;
 	static boolean resize = true;
+	static int width = 600;
+	static int height = 800;
 	
 	/**
 	 * main entry to the program
@@ -45,10 +47,8 @@ public class Application {
 			System.out.println("-------------");
 			for (File file : epubList) {
 				String cover = Utils.extractCover(file, outputDir);
-				if (cover != null) {
-					if (convertToGrayscale) {
-						Grayscale.convert(new File(cover));	
-					}									
+				if (cover != null && (resize || convertToGrayscale)) {
+					Utils.modifyImage(cover, resize, convertToGrayscale);
 				}
 			}
 		}
@@ -76,6 +76,12 @@ public class Application {
         Option unmodifiedImages = new Option("u", "unmodified", false, "Don't modify images");
         options.addOption(unmodifiedImages);
         
+        Option noResize = new Option("nr", "noresize", false, "Don't resize images");
+        options.addOption(noResize);
+        
+        Option noGray = new Option("ng", "nogray", false, "Don't convert images to grayscale");
+        options.addOption(noGray);
+        
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd = null;
@@ -100,7 +106,14 @@ public class Application {
         if (cmd.hasOption("unmodified")) {
         	convertToGrayscale = false;
         	resize = false;
+        }
+        if (cmd.hasOption("noresize")) {
+        	resize = false;
+        }
+        if (cmd.hasOption("nogray")) {
+        	convertToGrayscale = false;
         }        
+        
 	}
 	
 }
