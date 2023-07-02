@@ -15,3 +15,8 @@ Once you have built it, run it like so:
     -u,--unmodified     Don't modify images  
   
 You must specifiy the input directory. If you don't specify the output directory, the images will be wriitten in the input directory. The unmodified parameter will make it NOT change the images to grayscale and it won't resize them.
+
+Example image made from an epub: 
+<p align="center">
+  <img src="http://pipasoft.com/wp-content/uploads/We_Are_Legion_We_Are_Bob_Bobiverse_Book_1-by-Dennis_Taylor.jpg">
+</p>
